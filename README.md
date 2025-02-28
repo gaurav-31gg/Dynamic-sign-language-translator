@@ -63,10 +63,10 @@ Since this is a browser-based application, simply open the index.html file in Go
 ### **🛠️ Future Improvements**
 This project can be expanded and improved with the following features:
 
--Increase dataset coverage: Add more signs for better recognition.
--Improve accuracy: Use advanced deep learning models for better gesture classification.
--Voice Output: Convert recognized text into speech to enhance communication.
--Support for multiple languages: Extend support for different sign languages (ASL, BSL, ISL, etc.).
--Mobile Compatibility: Optimize the system for mobile browsers.
+-**Increase dataset coverage: Add more signs for better recognition.**
+-**Improve accuracy: Use advanced deep learning models for better gesture classification.**
+-**Voice Output: Convert recognized text into speech to enhance communication.**
+-**Support for multiple languages: Extend support for different sign languages (ASL, BSL, ISL, etc.).**
+-**Mobile Compatibility: Optimize the system for mobile browsers.**
 
 
