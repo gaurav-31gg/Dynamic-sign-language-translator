@@ -54,8 +54,19 @@ The system follows a structured pipeline for gesture recognition:
 ## **🚀 How to Run the Project**  
 Follow these steps to set up and run the project on your local machine:  
 
-### **1️⃣ Clone the Repository**  
-Open a terminal and run:  
-```bash
-git clone https://github.com/your-username/sign-language-recognition.git
-cd sign-language-recognition
+### **1️⃣ Open the Project in a Browser** 
+Since this is a browser-based application, simply open the index.html file in Google Chrome or any modern browser.
+### **2️⃣ Allow Camera Access**
+-The website will request webcam permissions to capture real-time hand gestures.
+-Ensure that your camera is properly connected and allowed in browser settings.
+
+### **🛠️ Future Improvements**
+This project can be expanded and improved with the following features:
+
+-Increase dataset coverage: Add more signs for better recognition.
+-Improve accuracy: Use advanced deep learning models for better gesture classification.
+-Voice Output: Convert recognized text into speech to enhance communication.
+-Support for multiple languages: Extend support for different sign languages (ASL, BSL, ISL, etc.).
+-Mobile Compatibility: Optimize the system for mobile browsers.
+
+
