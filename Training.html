@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Translator</title>
+    
+    <!-- External Libraries -->
+    <script src="https://kit.fontawesome.com/a658a7b479.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/@tensorflow-models/mobilenet"></script>
+    <script src="https://unpkg.com/@tensorflow-models/knn-classifier"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js" integrity="sha256-r/AaFHrszJtwpe+tHyNi/XCfMxYpbsRg2Uqn0x3s2zc=" crossorigin="anonymous"></script>
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+    <script defer src="main.js"></script>
+    <style>
+        /* Enhanced welcome screen styles */
+        #welcomeContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3498db, #8e44ad);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1.5s ease;
+            text-align: center;
+        }
+
+        #welcomeScreen {
+            color: white;
+            margin-bottom: 30px;
+            transition: all 1s ease;
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        #welcomeScreen h1 {
+            
+            font-size: 3.8em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            /* Text reveal animation */
+            animation: textReveal 1.5s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            background: linear-gradient(90deg, #ffffff, #f0f0f0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+
+        #welcomeIcon {
+            font-size: 5em;
+            margin-bottom: 30px;
+            color: white;
+            animation: bounceAndGlow 3s infinite;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        }
+
+        #welcomeMessage {
+            font-size: 1.7em;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeIn 2s ease forwards;
+            animation-delay: 0.5s;
+            opacity: 0;
+        }
+
+        #proceedButton {
+            padding: 16px 40px;
+            font-size: 1.3em;
+            background-color: white;
+            color: #cdcdcd;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: buttonPulse 2s infinite;
+        }
+
+        #proceedButton:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        #proceedButton::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.8);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        #proceedButton:hover::after {
+            animation: ripple 1s ease-out;
+        }
+
+        /* Enhanced animations */
+        @keyframes bounceAndGlow {
+            0%, 20%, 50%, 80%, 100% { 
+                transform: translateY(0); 
+                text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            }
+            40% { 
+                transform: translateY(-25px); 
+                text-shadow: 0 0 30px rgba(255, 255, 255, 0.9), 0 0 60px rgba(255, 255, 255, 0.4);
+            }
+            60% { 
+                transform: translateY(-15px);
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); 
+            }
+        }
+
+        @keyframes textReveal {
+            0% { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes buttonPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+
+       
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+       
+    </style>
+</head>
+
+<body>
+    <!-- Enhanced Welcome Screen -->
+    <div id="welcomeContainer">
+        <div id="welcomeScreen">
+            <div id="welcomeIcon"><i class="fas fa-hands"></i></div>
+            <h1>Welcome to Sign Language Translator</h1>
+            <p id="welcomeMessage">Break communication barriers with our AI-powered sign language translator.</p>
+        </div>
+        <button id="proceedButton">Let's Begin</button>
+    </div>
+   <!-- Loading with spinner -->
+   <div id="loading">
+</div>
+   
+    
+    <!-- Simplified Navigation Bar -->
+    <header id="header">
+        <div class="header-container">
+            <div class="logo-container">
+                <i class="fas fa-hand-sparkles logo-icon"></i>
+                <a href="#" class="logo">Sign Language Translator</a>
+            </div>
+            
+            <button class="mobile-menu-button" aria-label="Toggle menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="mobile-overlay"></div>
+            
+            <div class="nav-container">
+                <nav class="main-nav">
+                    <div class="nav-item">
+                        <a href="index.html" class="nav-link ">
+                            <i class="fas fa-home nav-icon"></i>Home
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="tutorial.html" class="nav-link">
+                            <i class="fas fa-book-open nav-icon"></i>Tutorial
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <i class="fas fa-dumbbell nav-icon"></i>Training
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="About.html" class="nav-link">
+                            <i class="fas fa-info-circle nav-icon"></i>About
+                        </a>
+                    </div>
+                </nav>
+                
+            </div>
+        </div>
+    </header>
+    
+    <!-- Alert Box -->
+    <div class="alert alert-success">Please train at least 30 images for each class for better accuracy.</div>
+    
+    <h1 class="myheading"><i class="fab fa-joomla"></i> Train Your Own Model</h1>
+    
+    <div class="container">
+        <!-- Webcam Section -->
+        <div class="webcam-section">
+            <video autoplay playsinline muted id="webcam" class="cam"></video>
+            <div class="prediction-box">
+                <h3>Prediction: <span id="predictions"></span></h3>
+                <h3>Probability: <span id="confidence"></span> %</h3>
+            </div>
+            <button id='btnSpeak' class="dark btn-lg btn-shadow">Speak <i class="fas fa-microphone"></i></button>
+        </div>
+        
+        <!-- Training Section -->
+        <div class="training-section">
+            <div class="model-controls">
+                <button class="dark btn-lg btn-shadow" id="save_button">Download Model <i class="fas fa-download"></i></button>
+                <input id="load_button" class="fileinputs" type="file" accept=".json">
+            </div>
+            
+            <div class="add-class">
+                <input id="inputClassName" type="text" placeholder="Enter Class Name Here" />
+                <button class="dark btn-lg btn-shadow" id="add-button">Add <i class="fas fa-plus"></i></button>
+            </div>
+            
+            <div id="training-cards" class="training-cards"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const webcamElement = document.getElementById("webcam");
+            const loadingScreen = document.getElementById("loading");
+            const welcomeContainer = document.getElementById("welcomeContainer");
+            const welcomeScreen = document.getElementById("welcomeScreen");
+            const proceedButton = document.getElementById("proceedButton");
+            
+            // Ensure the welcome screen is visible initially
+            welcomeContainer.style.opacity = "1";
+            
+            // Add an extra animation effect when the page loads
+            setTimeout(function() {
+                welcomeScreen.style.transform = "scale(1)";
+            }, 200);
+            
+            // Handle the proceed button click with enhanced transition
+            proceedButton.addEventListener("click", function() {
+                // Start exit animations
+                welcomeScreen.style.transform = "scale(0.8)";
+                welcomeScreen.style.opacity = "0";
+                
+                setTimeout(function() {
+                    welcomeContainer.style.opacity = "0";
+                }, 300);
+                
+                // Hide welcome container after transition completes
+                setTimeout(function() {
+                    welcomeContainer.style.display = "none";
+                }, 1800);
+            });
+            
+            // Camera access
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                webcamElement.srcObject = stream;
+            } catch (error) {
+                console.error("Error accessing the webcam:", error);
+            } finally {
+                // Hide loading screen only after welcome flow is complete or after a timeout
+                proceedButton.addEventListener("click", function() {
+                    setTimeout(function() {
+                        loadingScreen.style.display = "none";
+                    }, 2000);
+                });
+                
+                // Fallback timeout to hide loading if user doesn't click
+                setTimeout(function() {
+                    if (loadingScreen.style.display !== "none") {
+                        loadingScreen.style.display = "none";
+                    }
+                }, 10000);
+            }
+        });
+    </script>
+</body>
+</html>
